@@ -478,26 +478,57 @@ interface Layout {
   artCx: number
   artCy: number
   textX: number
+  /** Horizontal bounds of the art side, so nothing bleeds into the text column. */
+  artMinX: number
+  artMaxX: number
+}
+
+function clampArtX(layout: Layout, x: number, halfWidth: number): number {
+  return Math.min(Math.max(x, layout.artMinX + halfWidth), layout.artMaxX - halfWidth)
 }
 
 function drawMatteBlocks(ctx: Ctx, a: Analysis, layout: Layout, rng: Rng) {
   const colors = a.palette.slice(0, 4)
-  const nBlocks = Math.min(colors.length, 2 + Math.floor(rng() * 2))
+
+  // One big backdrop blob behind the main slice, offset so it peeks out.
+  const backdrop = mix(colors[colors.length > 1 ? 1 : 0], PAPER_RGB, 0.1)
+  ctx.save()
+  ctx.globalAlpha = 0.94
+  ctx.fillStyle = rgb(backdrop)
+  const backdropRx = range(rng, 300, 370)
+  blobPath(
+    ctx,
+    clampArtX(
+      layout,
+      layout.artCx + range(rng, -70, 70) + (layout.artOnRight ? 60 : -60),
+      backdropRx * 0.7,
+    ),
+    layout.artCy + range(rng, -60, 40),
+    backdropRx,
+    range(rng, 260, 330),
+    rng,
+  )
+  ctx.fill()
+  ctx.restore()
+
+  // 1–2 smaller satellite blocks clearly outside the slice footprint.
+  const nBlocks = 1 + Math.floor(rng() * 2)
   for (let i = 0; i < nBlocks; i++) {
-    const c = mix(colors[(i + 1) % colors.length], PAPER_RGB, 0.12)
+    const c = mix(colors[(i + 2) % colors.length], PAPER_RGB, 0.14)
     ctx.save()
-    ctx.globalAlpha = 0.92
+    ctx.globalAlpha = 0.9
     ctx.fillStyle = rgb(c)
-    const bx = layout.artCx + range(rng, -190, 190)
-    const by = layout.artCy + range(rng, -170, 190)
+    const side = rng() < 0.5 ? -1 : 1
+    const bx = clampArtX(layout, layout.artCx + side * range(rng, 280, 380), 130)
+    const by = layout.artCy + (rng() < 0.5 ? -1 : 1) * range(rng, 180, 330)
     if (rng() < 0.5) {
-      blobPath(ctx, bx, by, range(rng, 130, 235), range(rng, 110, 200), rng)
+      blobPath(ctx, bx, by, range(rng, 110, 180), range(rng, 95, 150), rng)
       ctx.fill()
     } else {
-      ctx.translate(bx, by)
+      ctx.translate(bx, Math.min(Math.max(by, SPLIT_Y + 140), POSTER_H - 160))
       ctx.rotate(range(rng, -0.09, 0.09))
-      const w = range(rng, 200, 360)
-      const h = range(rng, 170, 330)
+      const w = range(rng, 180, 300)
+      const h = range(rng, 150, 260)
       tornRectPath(ctx, -w / 2, -h / 2, w, h, rng, 6)
       ctx.fill()
     }
@@ -521,7 +552,11 @@ function drawSlices(ctx: Ctx, img: HTMLImageElement, a: Analysis, layout: Layout
     const sx = r.x + range(rng, 0, r.w - subW)
     const sy = r.y + range(rng, 0, r.h - subW)
     const size = range(rng, 150, 220)
-    const px = layout.artCx + (rng() < 0.5 ? -1 : 1) * range(rng, 250, 330)
+    const px = clampArtX(
+      layout,
+      layout.artCx + (rng() < 0.5 ? -1 : 1) * range(rng, 250, 330),
+      size / 2 + 20,
+    )
     const py = layout.artCy + (rng() < 0.5 ? -1 : 1) * range(rng, 200, 300)
     drawOneSlice(ctx, img, sx, sy, subW, subW, px, py, size, size, range(rng, -0.14, 0.14), rng)
   }
@@ -555,17 +590,29 @@ function drawOneSlice(
 }
 
 function drawDoodles(ctx: Ctx, layout: Layout, rng: Rng) {
-  const n = 3 + Math.floor(rng() * 5) // 3..7
+  const n = 4 + Math.floor(rng() * 4) // 4..7
   const placed: [number, number][] = []
   const kinds = ['arrow', 'squiggle', 'dashes', 'dots', 'cross', 'arcs', 'steam']
   const shuffled = [...kinds].sort(() => rng() - 0.5)
+  // Keep doodles on the art side so the text column stays clean.
+  const minX = layout.artMinX
+  const maxX = layout.artMaxX
   for (let i = 0; i < n; i++) {
     const kind = shuffled[i % shuffled.length]
-    const ang = range(rng, 0, Math.PI * 2)
-    const dist = range(rng, 320, 430)
-    const x = Math.min(Math.max(layout.artCx + Math.cos(ang) * dist, 90), POSTER_W - 110)
-    const y = Math.min(Math.max(layout.artCy + Math.sin(ang) * dist * 0.85, SPLIT_Y + 90), POSTER_H - 110)
-    if (placed.some(([px, py]) => Math.hypot(px - x, py - y) < 130)) continue
+    let x = layout.artCx
+    let y = layout.artCy
+    let ok = false
+    for (let attempt = 0; attempt < 14 && !ok; attempt++) {
+      const ang = range(rng, 0, Math.PI * 2)
+      const dist = range(rng, 300, 420)
+      x = Math.min(Math.max(layout.artCx + Math.cos(ang) * dist, minX), maxX)
+      y = Math.min(
+        Math.max(layout.artCy + Math.sin(ang) * dist * 0.9, SPLIT_Y + 90),
+        POSTER_H - 110,
+      )
+      ok = placed.every(([px, py]) => Math.hypot(px - x, py - y) >= 120)
+    }
+    if (!ok) continue
     placed.push([x, y])
     switch (kind) {
       case 'arrow': {
@@ -685,9 +732,11 @@ export async function renderPoster(
   const artOnRight = rng() < 0.5
   const layout: Layout = {
     artOnRight,
-    artCx: artOnRight ? POSTER_W * 0.66 : POSTER_W * 0.34,
+    artCx: artOnRight ? POSTER_W * 0.67 : POSTER_W * 0.33,
     artCy: SPLIT_Y + (POSTER_H - SPLIT_Y) * 0.52,
     textX: artOnRight ? POSTER_W * 0.075 : POSTER_W * 0.925,
+    artMinX: artOnRight ? POSTER_W * 0.47 : 70,
+    artMaxX: artOnRight ? POSTER_W - 70 : POSTER_W * 0.53,
   }
 
   drawTopHalf(ctx, img, rng)
