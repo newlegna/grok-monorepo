@@ -45,7 +45,9 @@ export default function App() {
       toast.success(`Composed by ${result.model}`)
     } catch (err) {
       if (err instanceof NoApiKeyError) {
-        setPoem(pickMockPoem(trimmed, size))
+        const mock = pickMockPoem(trimmed, size)
+        setPoem(mock)
+        setSize(mock.grid.length)
         setSource("mock")
         toast.info("No OPENAI_API_KEY on the server — showing a hand-authored offline sample instead.")
       } else {
@@ -139,7 +141,9 @@ export default function App() {
               className="ml-3 underline underline-offset-2 hover:opacity-80"
               onClick={() => {
                 setError(null)
-                setPoem(pickMockPoem(theme, size))
+                const mock = pickMockPoem(theme, size)
+                setPoem(mock)
+                setSize(mock.grid.length)
                 setSource("mock")
               }}
             >
