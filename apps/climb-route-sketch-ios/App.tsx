@@ -1,7 +1,6 @@
 import Slider from "@react-native-community/slider";
 import { Asset as ExpoAsset } from "expo-asset";
 import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -66,6 +65,7 @@ export default function App() {
   const [sketchW, setSketchW] = useState(0);
 
   const sketchRef = useRef<View>(null);
+  const photoRef = useRef<View>(null);
 
   const loadImage = async (uri: string, width: number, height: number) => {
     setBusy(true);
@@ -121,36 +121,48 @@ export default function App() {
   };
 
   const onPickColor = (e: GestureResponderEvent) => {
-    if (!raster || photoW === 0) return;
-    const scale = raster.width / photoW;
-    const x = Math.round(e.nativeEvent.locationX * scale);
-    const y = Math.round(e.nativeEvent.locationY * scale);
-    // Average a 5x5 patch so a single noisy pixel doesn't skew the pick.
-    let r = 0;
-    let g = 0;
-    let b = 0;
-    let n = 0;
-    for (let dy = -2; dy <= 2; dy++) {
-      for (let dx = -2; dx <= 2; dx++) {
-        const px = x + dx;
-        const py = y + dy;
-        if (px < 0 || px >= raster.width || py < 0 || py >= raster.height) {
-          continue;
+    if (!raster || photoW === 0 || !photoRef.current) return;
+    const { pageX, pageY } = e.nativeEvent;
+    const img = raster;
+    // locationX/locationY are unreliable on react-native-web, so derive the
+    // tap position from pageX/pageY and the photo's window position instead.
+    photoRef.current.measureInWindow((wx, wy) => {
+      const scale = img.width / photoW;
+      const x = Math.min(
+        img.width - 1,
+        Math.max(0, Math.round((pageX - wx) * scale)),
+      );
+      const y = Math.min(
+        img.height - 1,
+        Math.max(0, Math.round((pageY - wy) * scale)),
+      );
+      // Average a 5x5 patch so a single noisy pixel doesn't skew the pick.
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let n = 0;
+      for (let dy = -2; dy <= 2; dy++) {
+        for (let dx = -2; dx <= 2; dx++) {
+          const px = x + dx;
+          const py = y + dy;
+          if (px < 0 || px >= img.width || py < 0 || py >= img.height) {
+            continue;
+          }
+          const i = (py * img.width + px) * 4;
+          r += img.data[i];
+          g += img.data[i + 1];
+          b += img.data[i + 2];
+          n++;
         }
-        const i = (py * raster.width + px) * 4;
-        r += raster.data[i];
-        g += raster.data[i + 1];
-        b += raster.data[i + 2];
-        n++;
       }
-    }
-    if (n === 0) return;
-    setTarget({
-      r: Math.round(r / n),
-      g: Math.round(g / n),
-      b: Math.round(b / n),
+      if (n === 0) return;
+      setTarget({
+        r: Math.round(r / n),
+        g: Math.round(g / n),
+        b: Math.round(b / n),
+      });
+      setPickedAt([x, y]);
     });
-    setPickedAt([x, y]);
   };
 
   const shapes = useMemo(() => {
@@ -191,6 +203,9 @@ export default function App() {
         a.click();
         return;
       }
+      // Lazy import: expo-media-library has no web implementation and would
+      // crash the web bundle if imported at module scope.
+      const MediaLibrary = await import("expo-media-library");
       const perm = await MediaLibrary.requestPermissionsAsync(true);
       if (!perm.granted) {
         notify("Cannot save", "Photo library permission was not granted.");
@@ -254,6 +269,7 @@ export default function App() {
           {busy && <ActivityIndicator style={styles.spinner} color={INK} />}
           {raster && photoUri && (
             <Pressable
+              ref={photoRef}
               onPress={onPickColor}
               onLayout={(e) => setPhotoW(e.nativeEvent.layout.width)}
               style={styles.photoWrap}
