@@ -6,12 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#faf7f1"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.newlegna.climbroutesketch",
@@ -47,6 +41,14 @@
         "expo-media-library",
         {
           "savePhotosPermission": "Climb Route Sketch saves the finished route sketch as an image to your photo library."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#faf7f1"
         }
       ]
     ]
