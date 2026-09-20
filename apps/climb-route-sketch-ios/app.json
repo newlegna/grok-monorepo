@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Climb Route Sketch",
+    "slug": "climb-route-sketch",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#faf7f1"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.newlegna.climbroutesketch",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Climb Route Sketch uses the camera to photograph climbing walls so it can extract the holds of your route.",
+        "NSPhotoLibraryUsageDescription": "Climb Route Sketch reads wall photos you choose so it can extract the holds of your route. Photos never leave your device.",
+        "NSPhotoLibraryAddUsageDescription": "Climb Route Sketch saves the finished route sketch as an image to your photo library."
+      }
+    },
+    "android": {
+      "package": "com.newlegna.climbroutesketch",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Climb Route Sketch reads wall photos you choose so it can extract the holds of your route. Photos never leave your device.",
+          "cameraPermission": "Climb Route Sketch uses the camera to photograph climbing walls so it can extract the holds of your route."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Climb Route Sketch saves the finished route sketch as an image to your photo library."
+        }
+      ]
+    ]
+  }
+}
