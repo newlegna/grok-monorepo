@@ -6,6 +6,7 @@ import {
   rgbToHsv,
   type RGB,
 } from "./lib/extract";
+import { detectWallLines, type Polyline } from "./lib/wallLines";
 
 const MAX_DIM = 1000;
 const SAMPLE_URL = `${import.meta.env.BASE_URL}sample-wall.jpg`;
@@ -20,6 +21,19 @@ function posterColor(target: RGB): RGB {
   return hsvToRgb(h, Math.max(s, 0.55), Math.min(Math.max(v, 0.55), 0.92));
 }
 
+/** Open polyline as a smooth path (midpoint quadratic curves). */
+function pathSmoothOpen(ctx: CanvasRenderingContext2D, pts: Polyline): void {
+  if (pts.length < 2) return;
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) / 2;
+    const my = (pts[i][1] + pts[i + 1][1]) / 2;
+    ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+  }
+  const last = pts[pts.length - 1];
+  ctx.lineTo(last[0], last[1]);
+}
+
 export default function App() {
   const photoCanvasRef = useRef<HTMLCanvasElement>(null);
   const resultCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -31,6 +45,8 @@ export default function App() {
   const [hueTolerance, setHueTolerance] = useState(14);
   const [shadeTolerance, setShadeTolerance] = useState(0.55);
   const [minSize, setMinSize] = useState(1.2); // slider units, scaled below
+  const [showWallLines, setShowWallLines] = useState(true);
+  const [lineDetail, setLineDetail] = useState(0.5);
   const [loading, setLoading] = useState(false);
 
   const loadImage = useCallback((src: string, revoke = false) => {
@@ -125,6 +141,11 @@ export default function App() {
   }, [imageData, target, hueTolerance, shadeTolerance, minSize]);
   const holdCount = shapes ? shapes.length : null;
 
+  const wallLines = useMemo(() => {
+    if (!imageData || !showWallLines) return null;
+    return detectWallLines(imageData, { detail: lineDetail });
+  }, [imageData, showWallLines, lineDetail]);
+
   // Paint the abstract sketch.
   useEffect(() => {
     const canvas = resultCanvasRef.current;
@@ -134,6 +155,18 @@ export default function App() {
     const ctx = canvas.getContext("2d")!;
     ctx.fillStyle = "#faf7f1";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (wallLines) {
+      ctx.strokeStyle = "rgba(148, 131, 109, 0.6)";
+      ctx.lineWidth = Math.max(2, canvas.width * 0.003);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      for (const line of wallLines) {
+        ctx.beginPath();
+        pathSmoothOpen(ctx, line);
+        ctx.stroke();
+      }
+    }
 
     if (!shapes || !target) return;
 
@@ -148,7 +181,7 @@ export default function App() {
       ctx.fill();
       ctx.stroke();
     }
-  }, [imageData, target, shapes]);
+  }, [imageData, target, shapes, wallLines]);
 
   const download = () => {
     const canvas = resultCanvasRef.current;
@@ -293,6 +326,33 @@ export default function App() {
             >
               Download PNG
             </button>
+          </div>
+          <div className="mt-3 flex flex-col gap-3">
+            <label className="flex items-center gap-2 text-sm text-stone-700">
+              <input
+                type="checkbox"
+                checked={showWallLines}
+                onChange={(e) => setShowWallLines(e.target.checked)}
+                className="h-4 w-4 accent-stone-900"
+              />
+              Show wall lines (seams, volumes, plane breaks)
+            </label>
+            {showWallLines && (
+              <label className="text-sm">
+                <span className="flex justify-between text-stone-600">
+                  <span>Wall line detail</span>
+                  <span>{Math.round(lineDetail * 100)}%</span>
+                </span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(lineDetail * 100)}
+                  onChange={(e) => setLineDetail(Number(e.target.value) / 100)}
+                  className="mt-1 w-full accent-stone-900"
+                />
+              </label>
+            )}
           </div>
           <p className="mt-2 text-sm text-stone-600">
             {holdCount === null
