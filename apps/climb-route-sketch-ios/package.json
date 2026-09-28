@@ -1,0 +1,49 @@
+{
+  "name": "climb-route-sketch-ios",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@react-native-community/slider": "5.2.0",
+    "base64-js": "^1.5.1",
+    "expo": "~57.0.0",
+    "expo-asset": "~57.0.0",
+    "expo-file-system": "~57.0.0",
+    "expo-image-manipulator": "~57.0.0",
+    "expo-image-picker": "~57.0.0",
+    "expo-media-library": "~57.0.0",
+    "expo-sharing": "~57.0.0",
+    "expo-splash-screen": "~57.0.0",
+    "expo-status-bar": "~57.0.0",
+    "jpeg-js": "^0.4.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "~0.86.0",
+    "react-native-svg": "15.15.4",
+    "react-native-view-shot": "5.1.0",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/base64-js": "^1.5.0",
+    "@types/react": "~19.2.0",
+    "typescript": "~6.0.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "private": true,
+  "expo": {
+    "install": {
+      "exclude": [
+        "expo",
+        "expo-asset",
+        "expo-image-manipulator",
+        "expo-image-picker",
+        "expo-sharing"
+      ]
+    }
+  }
+}
