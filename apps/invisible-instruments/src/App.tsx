@@ -1,30 +1,41 @@
-import { ExternalLink, Music, Camera } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import './App.css'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      {/* Hero Section */}
-      <header className="relative overflow-hidden border-b border-slate-800/50">
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 via-transparent to-fuchsia-500/10" />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold tracking-tight text-slate-50 sm:text-7xl">
-              Invisible Instruments
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Hero Section - Large Media-Led */}
+      <header className="relative min-h-[85vh] flex items-center overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/40 via-slate-950 to-fuchsia-950/40" />
+        
+        {/* Hero background media - Violin demo still */}
+        <div className="absolute inset-0 opacity-25">
+          <img 
+            src="/media/invisible-violin-still.jpg" 
+            alt="Angel Wen demonstrating invisible violin with gesture tracking"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8 w-full py-32">
+          <div className="max-w-3xl">
+            <h1 className="text-7xl md:text-8xl font-bold tracking-tight text-white mb-8 leading-[0.95]">
+              Invisible<br />Instruments
             </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-300 max-w-2xl mx-auto">
-              Play music through the air with your hands. No physical instrument required—just your gestures, captured by your webcam.
+            <p className="text-2xl md:text-3xl text-slate-300 mb-8 font-light">
+              Play music through the air
             </p>
-            <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
-              <Music className="h-4 w-4" />
-              <span className="text-sm">Created by</span>
+            <div className="flex items-center gap-3 text-lg text-slate-400">
+              <span>Created by</span>
               <a 
                 href="https://x.com/creativelyange" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-violet-400 hover:text-violet-300 transition-colors font-medium"
+                className="text-violet-400 hover:text-violet-300 transition-colors font-medium border-b border-violet-400/30 hover:border-violet-300/50"
               >
-                Angel Wen (@creativelyange)
+                Angel Wen
               </a>
             </div>
           </div>
@@ -32,126 +43,103 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* Violin Section */}
-        <section className="mb-32">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 shadow-2xl backdrop-blur-sm">
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                  <Music className="h-6 w-6 text-violet-400" />
-                </div>
-                <h2 className="text-3xl font-bold text-slate-50">Invisible Air Violin</h2>
-              </div>
-              <p className="text-slate-400 text-lg mb-6">
-                Height Control in G Major
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-200 mb-4">How It Works</h3>
-                <div className="space-y-3 text-slate-400">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 h-2 w-2 rounded-full bg-violet-400 flex-shrink-0" />
-                    <p><strong className="text-slate-300">Left arm height:</strong> Selects which string to play</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 h-2 w-2 rounded-full bg-violet-400 flex-shrink-0" />
-                    <p><strong className="text-slate-300">Left arm sideways:</strong> Bowing motion to produce sound</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 h-2 w-2 rounded-full bg-violet-400 flex-shrink-0" />
-                    <p><strong className="text-slate-300">Right hand fingers:</strong> Bend fingers to add notes</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-700 bg-slate-950/50 p-6">
-                <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                  <Camera className="h-5 w-5 text-violet-400" />
-                  Requirements
-                </h3>
-                <ul className="space-y-2 text-slate-400">
-                  <li className="flex items-center gap-2">
-                    <span className="text-violet-400">✓</span>
-                    Working webcam
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-violet-400">✓</span>
-                    Modern web browser
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-violet-400">✓</span>
-                    Camera permissions enabled
-                  </li>
-                </ul>
+      <main className="mx-auto max-w-7xl px-6 lg:px-8 pb-32">
+        {/* Violin Section - Visual First */}
+        <section className="py-20 border-b border-slate-800/50">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Large Visual - Violin Demo Still */}
+            <div className="order-2 lg:order-1">
+              <div className="relative rounded-2xl overflow-hidden border border-violet-500/20 shadow-2xl shadow-violet-500/10">
+                <img 
+                  src="/media/invisible-violin-still.jpg" 
+                  alt="Angel Wen demonstrating the invisible violin at a workshop with gesture tracking visualization"
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
               </div>
             </div>
 
-            <div className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-6">
-              <p className="text-sm text-slate-400 mb-4">
-                The violin opens in a new tab. You'll need to allow camera access to play.
+            {/* Concise Content */}
+            <div className="order-1 lg:order-2">
+              <h2 className="text-5xl font-bold text-white mb-6 tracking-tight">
+                Invisible<br />Air Violin
+              </h2>
+              <p className="text-xl text-slate-400 mb-8">
+                Height Control · G Major
               </p>
+              
+              <div className="space-y-4 text-slate-300 mb-10 text-lg">
+                <p>Left arm height selects strings</p>
+                <p>Sideways motion bows</p>
+                <p>Right fingers add notes</p>
+              </div>
+
               <a
                 href="https://newlegna.github.io/invisible-violin/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-violet-500/20 hover:bg-violet-500 transition-all hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-3 rounded-full bg-violet-600 px-8 py-4 text-lg font-semibold text-white shadow-2xl shadow-violet-500/30 hover:bg-violet-500 transition-all hover:scale-105 active:scale-95"
               >
-                Play Invisible Violin
-                <ExternalLink className="h-4 w-4" />
+                Play Violin
+                <ExternalLink className="h-5 w-5" />
               </a>
+              <p className="text-sm text-slate-500 mt-4">
+                Opens in new tab · Webcam required
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Cello Section */}
-        <section>
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 shadow-2xl backdrop-blur-sm">
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20">
-                  <Music className="h-6 w-6 text-fuchsia-400" />
-                </div>
-                <h2 className="text-3xl font-bold text-slate-50">Invisible Cello</h2>
-              </div>
-              <p className="text-slate-400 text-lg mb-6">
-                Gesture-controlled cello performance
+        {/* Cello Section - Visual First */}
+        <section className="py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Concise Content */}
+            <div>
+              <h2 className="text-5xl font-bold text-white mb-6 tracking-tight">
+                Invisible<br />Cello
+              </h2>
+              <p className="text-xl text-slate-400 mb-8">
+                Gesture-Controlled Performance
               </p>
-            </div>
+              
+              <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+                Hand tracking brings cello performance into the air. Watch the demonstration to see it in action.
+              </p>
 
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-slate-200 mb-4">About This Instrument</h3>
-              <p className="text-slate-400 leading-relaxed">
-                The invisible cello uses hand tracking to simulate cello playing through the air. 
-                See the demonstration video to watch it in action.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/5 p-6">
-              <p className="text-sm text-slate-400 mb-4">
-                Watch a demonstration of the invisible cello on X.
-              </p>
               <a
                 href="https://x.com/creativelyange/status/2111150255681270105"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-fuchsia-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-fuchsia-500/20 hover:bg-fuchsia-500 transition-all hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-3 rounded-full bg-fuchsia-600 px-8 py-4 text-lg font-semibold text-white shadow-2xl shadow-fuchsia-500/30 hover:bg-fuchsia-500 transition-all hover:scale-105 active:scale-95"
               >
-                Watch Demo Video
-                <ExternalLink className="h-4 w-4" />
+                Watch Demo
+                <ExternalLink className="h-5 w-5" />
               </a>
+              <p className="text-sm text-slate-500 mt-4">
+                Demonstration video
+              </p>
+            </div>
+
+            {/* Large Visual - Cello Demo Still */}
+            <div>
+              <div className="relative rounded-2xl overflow-hidden border border-fuchsia-500/20 shadow-2xl shadow-fuchsia-500/10">
+                <img 
+                  src="/media/invisible-cello-still.jpg" 
+                  alt="Angel Wen performing with the invisible cello, showing active gesture tracking overlays"
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+              </div>
             </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/50 mt-24">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-slate-500">
-            Invisible Instruments by Angel Wen · Built with gesture recognition and web audio
+      <footer className="border-t border-slate-800/30 py-12">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <p className="text-center text-slate-500">
+            Invisible Instruments · Angel Wen · 2024
           </p>
         </div>
       </footer>
